@@ -48,6 +48,7 @@ struct event_info {
 static std::vector<log_entry> logs;
 static int logs_num = 0;
 static int max_logs_num;
+static std::string log_path;
 
 static std::vector<event_info> event_infos;
 static char buffer[1000];
@@ -135,6 +136,7 @@ void PMU_INIT() {
   YAML::Node config = YAML::LoadFile(std::getenv("PMU_ANALYZER_CONFIG_FILE"));
   auto events = config["events"];
   max_logs_num = config["max_logs_num"].as<int>();
+  log_path = config["log_path"].as<std::string>();
 
   for (YAML::const_iterator it = events.begin(); it != events.end(); it++) {
     std::string event_name = it->as<std::string>();
@@ -220,7 +222,7 @@ void PMU_CLOSE() {
   }
 
   char logfile_name[100];
-  sprintf(logfile_name, "/home/sykwer/work/autoware_tutorial/log/pmu_log_%d", getpid());
+  sprintf(logfile_name, "%s/pmu_log_%d", log_path.c_str(), getpid());
 
   FILE *f = fopen(logfile_name, "a+");
   if (f == NULL) {
