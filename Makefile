@@ -1,3 +1,3 @@
 lib/libpmutracer.so:
 	mkdir -p lib
-	g++ -shared -fPIC ./src/pmu.cpp -lpfm -Iinclude -o lib/libpmuanalyzer.so
+	g++ -shared -fPIC -g ./src/pmu.cpp -lpfm -lyaml-cpp -Iinclude -o lib/libpmuanalyzer.so

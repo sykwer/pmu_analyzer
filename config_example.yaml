@@ -1,0 +1,4 @@
+events:
+  - instructions
+  - bus-cycles
+max_logs_num: 400
