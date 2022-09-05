@@ -19,12 +19,12 @@ namespace pmu_analyzer {
 
 static std::vector<std::string> monitored_event_strings;
 
-struct log_entry {
+struct LogEntry {
   int trace_id;
   std::vector<uint64_t> values;
 };
 
-struct read_format {
+struct ReadFormat {
   uint64_t nr;            /* The number of events */
   uint64_t  time_enabled; /* if PERF_FORMAT_TOTAL_TIME_ENABLED */
   uint64_t time_running;  /* if PERF_FORMAT_TOTAL_TIME_RUNNING */
@@ -34,7 +34,7 @@ struct read_format {
   } values[];
 };
 
-struct event_info {
+struct EventInfo {
   std::string event_string;
   char is_leader;
   uint32_t event_type;
@@ -45,17 +45,17 @@ struct event_info {
   uint64_t measured_value;
 };
 
-static std::vector<log_entry> logs;
+static std::vector<LogEntry> logs;
 static int logs_num = 0;
 static int max_logs_num;
 static std::string log_path;
 
-static std::vector<event_info> event_infos;
+static std::vector<EventInfo> event_infos;
 static char buffer[1000];
 static int global_leader_fd;
 
 
-static void encode_event_string(event_info *event_info) {
+static void encode_event_string(EventInfo *event_info) {
   pfm_perf_encode_arg_t arg;
  	struct perf_event_attr attr;
  	char *fstr = NULL; // Get event string in [pmu::][event_name][:unit_mask][:modifier|:modifier=val]
@@ -80,7 +80,7 @@ static void encode_event_string(event_info *event_info) {
 }
 
 
-static void setup_perf_event_attr_grouped(event_info *event_info) {
+static void setup_perf_event_attr_grouped(EventInfo *event_info) {
   struct perf_event_attr *attr = &event_info->event_attr;
 
   memset(attr, 0, sizeof(*attr));
@@ -101,7 +101,6 @@ static int prepare_event_infos() {
   // First element has to be the leader for this impelentation
   event_infos[0].is_leader = 1;
 
-  // for (int i = 0; i < MONITORED_EVENTS_NUM; i++) {
   for (int i = 0; i < monitored_event_strings.size(); i++) {
     event_infos[i].event_string = monitored_event_strings[i];
     encode_event_string(&event_infos[i]);
@@ -146,7 +145,7 @@ void PMU_INIT() {
   int events_num = monitored_event_strings.size();
   event_infos.resize(events_num);
   logs.resize(max_logs_num);
-  for (log_entry &e : logs) {
+  for (LogEntry &e : logs) {
     e.values.resize(events_num);
   }
 
@@ -182,7 +181,7 @@ void PMU_TRACE_END(int trace_id) {
     exit(EXIT_FAILURE);
   }
 
-  struct read_format *rf = (struct read_format*) buffer;
+  ReadFormat *rf = (ReadFormat*) buffer;
   int sz = read(global_leader_fd, buffer, sizeof(buffer));
 
   if (sz < 0) {
@@ -195,7 +194,7 @@ void PMU_TRACE_END(int trace_id) {
     exit(EXIT_FAILURE);
   }
 
-  log_entry &e = logs[logs_num];
+  LogEntry &e = logs[logs_num];
   e.trace_id = trace_id;
   int values_num_read = 0;
 
