@@ -134,7 +134,7 @@ void PMU_INIT() {
 
   YAML::Node config = YAML::LoadFile(std::getenv("PMU_ANALYZER_CONFIG_FILE"));
   auto events = config["events"];
-  max_logs_num = config["max_logs_num"].as<int>();
+  max_logs_num = config["max_logs_num"]["pmu"].as<int>();
   log_path = config["log_path"].as<std::string>();
 
   for (YAML::const_iterator it = events.begin(); it != events.end(); it++) {

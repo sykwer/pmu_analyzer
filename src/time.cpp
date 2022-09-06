@@ -48,7 +48,7 @@ void ELAPSED_TIME_INIT(std::string &session_name) {
       first = false;
       YAML::Node config = YAML::LoadFile(std::getenv("PMU_ANALYZER_CONFIG_FILE"));
       log_path = config["log_path"].as<std::string>();
-      max_logs_num = config["max_logs_num"].as<int>();
+      max_logs_num = config["max_logs_num"]["elapsed_time"].as<int>();
     }
 
     session2idx[session_name] = local_session_idx;
