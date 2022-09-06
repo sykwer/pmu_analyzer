@@ -3,6 +3,9 @@ You can insert tracepoints that enable to measure any performance counter at any
 Additionally, various functionalities are provided to aid your performance analysis.
 
 ## Features
+- Provide a library that enables to repeatedly measure an arbitrary performance counter at an arbitrary section in a C++ application. The measured performance counter can be specified in string data which shown in `perf list` command.
+- Provide a supplementary library that enables to repeatedly measure elapsed time at an arbitrary section in a C++ application.
+- Provide a default parser (visualizer) for the above two features.
 
 ## Environment
 WIP
