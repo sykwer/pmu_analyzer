@@ -78,4 +78,16 @@ PMU_ANALYZER_CONFIG_FILE=/path/to/config.yaml python3 scripts/pmu_original_parse
 
 
 
-## Usage
+## API
+### libpmuanalyzer: Measure Performance Counter
+As mentioned above, we have four functions to repeatedly measure an arbitrary performance counter at an arbitrary section in a C++ application.
+
+- `void pmu_analyzer::PMU_INIT()`: Create file descripters that observe performance counters specified in the yaml config file. This init function emits `perf_event_open(2)` syscall.
+- `void pmu_analyzer::PMU_TRACE_START(int trace_id)`: Start counting the performance counters specified in the yaml config file. This start function emits ioctl syscall that operates the file descripter created in the `PMU_INIT` function. You are supposed to pass the same `trace_id` for `PMU_TRACE_START` and `PMU_TRACE_END` in one measurement.
+- `void pmu_analyzer::PMU_TRACE_END(int trace_id)`: End counting the performance counters. This end function emits ioctl syscall that operates the file descripter created in `PMU_INIT` the funciton. The results are written into a log file later in the `PMU_CLOSE` function. You are supposed to pass the same `trace_id` for `PMU_TRACE_START` and `PMU_TRACE_END` in one measurement.
+- `void pmu_analyzer::PMU_CLOSE()`: Close the file descripters created in the `PMU_INIT` function and write log data into the file located at `${log_path}/pmu_log_${pid}`.
+
+All these four kinds of functions must be called in the same thread to satisfy the constraint of the `perf_event_open(2)`.
+
+### libpmuanalyzer: Measure Elapsed Time
+WIP
