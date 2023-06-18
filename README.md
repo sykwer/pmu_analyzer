@@ -27,16 +27,16 @@ void compute() {
 int main() {
   pmu_analyzer::PMU_INIT();
   int trace_id = 0;
-  
+
   while (running()) {
     pmu_analyzer::PMU_TRACE_START(trace_id);
-    
+
     compute();
-    
+
     pmu_analyzer::PMU_TRACE_END(trace_id);
     trace_id++;
   }
-  
+
   pmu_analyzer::PMU_CLOSE();
 }
 ```
@@ -70,7 +70,7 @@ After `PMU_CLOSE` is called, a log file named `${log_path}/pmu_log_${pid}` is cr
 You can create your own log parser or use the provided one.
 
 ```shell
-PMU_ANALYZER_CONFIG_FILE=/path/to/config.yaml python3 scripts/pmu_original_parser.py `${log_path}/pmu_log_${pid}`
+PMU_ANALYZER_CONFIG_FILE=/path/to/config.yaml python3 scripts/pmu_parser.py `${log_path}/pmu_log_${pid}`
 ```
 
 ### Measure turn-around time
@@ -96,24 +96,24 @@ void f2() {
 int main() {
   std::string session_name = "session0";
   pmu_analyzer::ELAPSED_TIME_INIT(session_name);
-  
+
   while (running()) {
     pmu_analyzer::ELAPSED_TIME_TIMESTAMP(session_name, 0 /* part index */,
        true /* is first in this loop? */, 0 /* data (any data you like) */);
-       
+
     f0();
-    
+
     pmu_analyzer::ELAPSED_TIME_TIMESTAMP(session_name, 1, false, 0);
-    
+
     f1();
-    
+
     pmu_analyzer::ELAPSED_TIME_TIMESTAMP(session_name, 2, false, 0);
-    
+
     f2();
-    
+
     pmu_analyzer::ELAPSED_TIME_TIMESTAMP(session_name, 3, false, 0);
   }
-  
+
   pmu_analyzer::ELAPSED_TIME_CLOSE(session_name);
 }
 ```
@@ -142,7 +142,7 @@ After `ELAPSED_TIME_CLOSE` is called, a log file named `${log_path}/elapsed_time
 You can create your own log parser or use the provided one.
 
 ```shell
-PMU_ANALYZER_CONFIG_FILE=/path/to/config.yaml python3 scripts/elapsed_time_original_parser.py `${log_path}/elapsed_time_log_${pid}_${local_session_idx}`
+PMU_ANALYZER_CONFIG_FILE=/path/to/config.yaml python3 scripts/elapsed_time_parser.py `${log_path}/elapsed_time_log_${pid}_${local_session_idx}`
 ```
 
 ### Relationship between performance counter and time-around time
