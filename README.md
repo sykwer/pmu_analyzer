@@ -145,6 +145,42 @@ You can create your own log parser or use the provided one.
 PMU_ANALYZER_CONFIG_FILE=/path/to/config.yaml python3 scripts/elapsed_time_parser.py `${log_path}/elapsed_time_log_${pid}_${local_session_idx}`
 ```
 
+### Output custom variables
+In addition to measuring elapsed time, you can output custom variable data during execution using the `OUTPUT_VARIABLE` function.
+This allows you to log arbitrary numerical data (e.g., algorithm parameters, computed values, data sizes) that can be correlated with timing measurements.
+
+```cpp
+#include <pmu_analyzer.hpp>
+
+int main() {
+  std::string session_name = "session0";
+  pmu_analyzer::ELAPSED_TIME_INIT(session_name);
+
+  while (running()) {
+    pmu_analyzer::ELAPSED_TIME_TIMESTAMP(session_name, 0, true, 0);
+    
+    // Perform some computation
+    std::vector<double> algorithm_params = {1.5, 2.3, 0.8};
+    double processing_load = compute_load();
+    
+    // Log custom variables
+    pmu_analyzer::OUTPUT_VARIABLE(session_name, "algorithm_params", algorithm_params);
+    std::vector<double> load_data = {processing_load};
+    pmu_analyzer::OUTPUT_VARIABLE(session_name, "processing_load", load_data);
+    
+    pmu_analyzer::ELAPSED_TIME_TIMESTAMP(session_name, 1, false, 0);
+  }
+
+  pmu_analyzer::ELAPSED_TIME_CLOSE(session_name);
+}
+```
+
+After `ELAPSED_TIME_CLOSE` is called, a variable log file named `${log_path}/variable_log_${pid}_${local_session_idx}` is created, with the following format:
+
+```text
+<session_name> <loop_idx> <variable_name> <value0> <value1> ...
+```
+
 ### Relationship between performance counter and time-around time
 TODO
 
@@ -220,4 +256,13 @@ Ends a session to measure the turn-around time of the target and write log data 
 
 ```cpp
 void pmu_analyzer::ELAPSED_TIME_CLOSE(std::string &session_name);
+```
+
+#### OUTPUT_VARIABLE
+Logs custom variable data during execution within a timing session.
+This function allows you to output arbitrary numerical data that can be correlated with timing measurements.
+The variable data is associated with the current loop index of the session.
+
+```cpp
+void pmu_analyzer::OUTPUT_VARIABLE(std::string &session_name, std::string &variable_name, std::vector<double> &data);
 ```
