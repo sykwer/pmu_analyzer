@@ -9,8 +9,6 @@
 #include <perfmon/pfmlib.h>
 #include <perfmon/pfmlib_perf_event.h>
 
-#include <string>
-#include <vector>
 #include <yaml-cpp/yaml.h>
 
 #include <pmu_analyzer.hpp>

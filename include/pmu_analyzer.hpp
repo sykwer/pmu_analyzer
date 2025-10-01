@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace pmu_analyzer {
   void PMU_INIT();
