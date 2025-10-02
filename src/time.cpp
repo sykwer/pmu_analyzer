@@ -116,34 +116,38 @@ void ELAPSED_TIME_CLOSE(std::string &session_name) {
   int local_session_idx = session2idx[session_name];
 
   // Output elapsed time logs
-  char logfile_name[100];
-  sprintf(logfile_name, "%s/elapsed_time_log_%d_%d", log_path.c_str(), getpid(), local_session_idx);
+  if (elapsed_logs_num[local_session_idx] > 0) {
+    char logfile_name[100];
+    sprintf(logfile_name, "%s/elapsed_time_log_%d_%d", log_path.c_str(), getpid(), local_session_idx);
 
-  FILE *f = fopen(logfile_name, "a+");
+    FILE *f = fopen(logfile_name, "a+");
 
-  for (int i = 0; i < elapsed_logs_num[local_session_idx]; i++) {
-    ElapsedLogEntry &e = elapsed_logs[local_session_idx][i];
-    fprintf(f, "%s %d %d %lld %lld\n", session_name.c_str(), e.part_idx, e.loop_idx, e.timestamp, e.data);
+    for (int i = 0; i < elapsed_logs_num[local_session_idx]; i++) {
+      ElapsedLogEntry &e = elapsed_logs[local_session_idx][i];
+      fprintf(f, "%s %d %d %lld %lld\n", session_name.c_str(), e.part_idx, e.loop_idx, e.timestamp, e.data);
+    }
+
+    fclose(f);
   }
-
-  fclose(f);
 
   // Output variable logs
-  char var_logfile_name[100];
-  sprintf(var_logfile_name, "%s/variable_log_%d_%d", log_path.c_str(), getpid(), local_session_idx);
+  if (var_logs_num[local_session_idx] > 0) {
+    char var_logfile_name[100];
+    sprintf(var_logfile_name, "%s/variable_log_%d_%d", log_path.c_str(), getpid(), local_session_idx);
 
-  FILE *vf = fopen(var_logfile_name, "a+");
+    FILE *vf = fopen(var_logfile_name, "a+");
 
-  for (int i = 0; i < var_logs_num[local_session_idx]; i++) {
-    VariableLogEntry &v = var_logs[local_session_idx][i];
-    fprintf(vf, "%s %d %s ", session_name.c_str(), v.loop_idx, v.variable_names.c_str());
-    for (const double &value : v.data) {
-      fprintf(vf, "%lf ", value);
+    for (int i = 0; i < var_logs_num[local_session_idx]; i++) {
+      VariableLogEntry &v = var_logs[local_session_idx][i];
+      fprintf(vf, "%s %d %s ", session_name.c_str(), v.loop_idx, v.variable_names.c_str());
+      for (const double &value : v.data) {
+        fprintf(vf, "%lf ", value);
+      }
+      fprintf(vf, "\n");
     }
-    fprintf(vf, "\n");
-  }
 
-  fclose(vf);
+    fclose(vf);
+  }
 }
 
 } // namespace pmu_analyzer
